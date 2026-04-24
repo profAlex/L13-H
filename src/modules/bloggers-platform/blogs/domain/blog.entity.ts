@@ -1,5 +1,8 @@
-import {Prop, Schema} from "@nestjs/mongoose";
+import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
 import {ApiProperty, ApiTags} from "@nestjs/swagger";
+import {HydratedDocument, Model} from "mongoose";
+import {CreateBlogDomainDto} from "./dto/create-blog.domain.dto";
+import {UpdateBlogDto} from "../dto/create-blog.dto";
 
 // type-fields for reference:
 // export type BloggerCollectionStorageModel = {
@@ -43,7 +46,84 @@ export class Blog {
      */
     createdAt: Date;
 
+    /**
+     * Deletion timestamp, nullable, if date exist, means entity soft deleted
+     * @type {Date | null}
+     */
+    @Prop({type: Date, nullable: true})
+    deletedAt: Date | null;
+
     @ApiProperty({example: false, description: 'True if user has not expired membership subscription to blog'})
     @Prop({type: Boolean, required: true, default: false})
     isMembership: boolean;
+
+//     _id: ObjectId;
+//     id: string;
+//     name: string;
+//     description: string;
+//     websiteUrl: string;
+//     createdAt: Date;
+//     isMembership: boolean;
+    /**
+     * Factory method to create a Blog instance
+     * @param {CreateBlogDto} dto - The data transfer object for blog creation
+     * @returns {BlogDocument} The created blog document
+     * DDD started: как создать сущность, чтобы она не нарушала бизнес-правила? Делегируем это создание статическому методу
+     */
+    static createInstance(dto: CreateBlogDomainDto): BlogDocument {
+        const blog = new this();
+        blog.name = dto.name;
+        blog.description = dto.description;
+        blog.websiteUrl = dto.websiteUrl;
+        blog.isMembership = true;
+
+        return blog as BlogDocument;
+    }
+
+
+    /**
+     * Marks the blog as deleted
+     * Throws an error if already deleted
+     * @throws {Error} If the entity is already deleted
+     * DDD continue: инкапсуляция (вызываем методы, которые меняют состояние\св-ва) объектов согласно правилам этого объекта
+     */
+    makeDeleted() {
+        if (this.deletedAt !== null) {
+            throw new Error('Blog entity already deleted');
+        }
+        this.deletedAt = new Date();
+    }
+
+    // name: string;
+    // description: string;
+    // websiteUrl: string;
+    /**
+     * Updates the blog instance with new data
+     * Resets name, description and websiteUrl
+     * @param {UpdateUserDto} dto - The data transfer object for blog updates
+     * DDD continue: инкапсуляция (вызываем методы, которые меняют состояние\св-ва) объектов согласно правилам этого объекта
+     */
+    update(dto: UpdateBlogDto) {
+        if (dto.name !== this.name) {
+            this.name = dto.name;
+        }
+        if (dto.description !== this.description) {
+            this.description = dto.description;
+        }
+        if (dto.websiteUrl !== this.websiteUrl) {
+            this.websiteUrl = dto.websiteUrl;
+        }
+    }
 }
+
+
+export const BlogSchema = SchemaFactory.createForClass(Blog);
+
+//регистрирует методы сущности в схеме
+BlogSchema.loadClass(Blog);
+
+//Типизация документа
+export type BlogDocument = HydratedDocument<Blog>;
+
+//Типизация модели + статические методы
+export type BlogModelType = Model<BlogDocument> & typeof Blog;
