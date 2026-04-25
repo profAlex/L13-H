@@ -4,7 +4,7 @@ import {AppService} from './app.service';
 import {UserAccountsModule} from './modules/user-accounts/user-accounts.module';
 import {MongooseModule} from '@nestjs/mongoose';
 import {TestingModule} from './modules/testing/testing.module';
-import {BloggersPlatformModule} from './modules/bloggers-platform/blogs/bloggers-platform.module';
+import {BloggersPlatformModule} from './modules/bloggers-platform/bloggers-platform.module';
 import {CoreModule} from './core/core.module';
 import {envConfig} from "./config";
 

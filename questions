@@ -1,0 +1,10 @@
+1. Зачем base.paginated.view-dto.ts именно абстрактным класс PaginatedViewDto сделан? Чем будет отличаться от class просто?
+
+2. в user.entity.ts мы написали 
+    get id() {
+        // @ts-ignore
+        return this._id.toString();
+    }
+    
+    но в users.view-dt.ts в методе static mapToView мы пишем dto.id = user._id.toString();
+    Разве мы не можем просто написать dto.id = user.id??
