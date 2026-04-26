@@ -10,6 +10,8 @@ import {BlogsQueryRepository} from "./blogs/infrastructure/query/blogs.query-rep
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
+    MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
+
     UserAccountsModule
   ],
   controllers: [BlogsController],

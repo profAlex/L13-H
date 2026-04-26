@@ -1,4 +1,4 @@
-import {ApiOkResponse, ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {ApiOkResponse, ApiOperation, ApiParam, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {Body, Controller, Get, Post, Query} from "@nestjs/common";
 import {GetBlogsQueryParams} from "./input-dto/get-blogs-query-params.input-dto";
 import {PaginatedViewDto} from "../../../../core/dto/base.paginated.view-dto";
@@ -31,10 +31,20 @@ export class BlogsController {
     }
 
     @Post()
-    async createNewBlog(@Body() body: CreateBlogInputDto): Promise<BlogViewDto>{
+    async createNewBlog(@Body() body: CreateBlogInputDto): Promise<BlogViewDto> {
         const blogId = await this.blogsService.createNewBlog(body);
 
         return this.blogsQueryRepository.getBlogByIdOrNotFoundFail(blogId);
     }
+
+    @ApiOperation({
+        summary: 'Получить посты',
+        description: 'Получить все посты, относящиеся к ID блоггера'
+    })
+    @ApiParam({name: 'blogId'}) //для сваггера
+    @Get(':blogId/posts')
+    async getPostsByBlogId(@Query() query: GetPostsQueryParams): Promise<PaginatedViewDto<PostViewDto[]>> {
+    }
+
 
 }
