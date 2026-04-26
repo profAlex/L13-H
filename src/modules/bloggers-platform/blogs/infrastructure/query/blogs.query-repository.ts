@@ -3,7 +3,7 @@ import {BlogViewDto} from "../../api/view-dto/blogs.view-dto";
 import {Blog, BlogModelType} from "../../domain/blog.entity";
 import {FilterQuery} from "mongoose";
 import {GetBlogsQueryParams} from "../../api/input-dto/get-blogs-query-params.input-dto";
-import {Injectable} from "@nestjs/common";
+import {Injectable, NotFoundException} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
 
 @Injectable()
@@ -70,5 +70,18 @@ export class BlogsQueryRepository {
             size: query.pageSize,
             totalCount: totalCount
         })
+    }
+
+    async getBlogByIdOrNotFoundFail(blogId: string): Promise<BlogViewDto> {
+        const blog = await this.BlogModel.findOne({
+            _id: blogId,
+            deletedAt: null,
+        });
+
+        if (!blog) {
+            throw new NotFoundException('Blog not found');
+        }
+
+        return BlogViewDto.mapToView(blog);
     }
 }

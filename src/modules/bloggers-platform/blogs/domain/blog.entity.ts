@@ -57,6 +57,15 @@ export class Blog {
     @Prop({type: Boolean, required: true, default: false})
     isMembership: boolean;
 
+    /**
+     * Virtual property to get the stringified ObjectId
+     * @returns {string} The string representation of the ID
+     */
+    get id(): string {
+        // @ts-ignore
+        return this._id.toString();
+    }
+
 //     _id: ObjectId;
 //     id: string;
 //     name: string;
