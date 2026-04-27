@@ -2,7 +2,7 @@ import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
 import {ApiProperty, ApiTags} from "@nestjs/swagger";
 import {HydratedDocument, Model} from "mongoose";
 import {CreateBlogDomainDto} from "./dto/create-blog.domain.dto";
-import {UpdateBlogDto} from "../dto/create-blog.dto";
+import {UpdateBlogInputDto} from "../dto/create-blog.dto";
 
 // type-fields for reference:
 // export type BloggerCollectionStorageModel = {
@@ -80,13 +80,13 @@ export class Blog {
      * DDD started: как создать сущность, чтобы она не нарушала бизнес-правила? Делегируем это создание статическому методу
      */
     static createInstance(dto: CreateBlogDomainDto): BlogDocument {
-        const blog = new this();
-        blog.name = dto.name;
-        blog.description = dto.description;
-        blog.websiteUrl = dto.websiteUrl;
-        blog.isMembership = true;
+        const newBlog = new this();
+        newBlog.name = dto.name;
+        newBlog.description = dto.description;
+        newBlog.websiteUrl = dto.websiteUrl;
+        newBlog.isMembership = true;
 
-        return blog as BlogDocument;
+        return newBlog as BlogDocument;
     }
 
 
@@ -112,7 +112,7 @@ export class Blog {
      * @param {UpdateUserDto} dto - The data transfer object for blog updates
      * DDD continue: инкапсуляция (вызываем методы, которые меняют состояние\св-ва) объектов согласно правилам этого объекта
      */
-    update(dto: UpdateBlogDto) {
+    update(dto: UpdateBlogInputDto) {
         if (dto.name !== this.name) {
             this.name = dto.name;
         }

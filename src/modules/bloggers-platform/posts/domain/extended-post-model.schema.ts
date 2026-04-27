@@ -1,7 +1,9 @@
 import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
 import {LikeStatus} from "../../../../core/enums/like-status.enum";
-import {LikeDetailsViewModel, LikeDetailsViewModelSchema} from "./like-details-view-model.schema";
-
+import {
+    LikeDetailsModel,
+    LikeDetailsModelSchema,
+} from "./like-details-model.schema";
 
 // export type ExtendedPostViewModel = {
 //     likesCount: number;
@@ -11,7 +13,7 @@ import {LikeDetailsViewModel, LikeDetailsViewModelSchema} from "./like-details-v
 // }
 
 @Schema({_id: false})
-export class ExtendedPostViewModel {
+export class ExtendedPostModel {
     @Prop({type: Number})
     likesCount: number;
 
@@ -25,9 +27,9 @@ export class ExtendedPostViewModel {
     myStatus: LikeStatus;
 
     @Prop({
-        type: LikeDetailsViewModelSchema
+        type: [LikeDetailsModelSchema], default: []
     })
-    newestLikes: LikeDetailsViewModel[];
+    newestLikes: LikeDetailsModel[];
 }
 
-export const ExtendedPostViewModelSchema = SchemaFactory.createForClass(ExtendedPostViewModel);
+export const ExtendedPostModelSchema = SchemaFactory.createForClass(ExtendedPostModel);

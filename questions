@@ -8,3 +8,7 @@
     
     но в users.view-dt.ts в методе static mapToView мы пишем dto.id = user._id.toString();
     Разве мы не можем просто написать dto.id = user.id??
+    
+3. Проверить     async getPostsByBlogId(@Query() query: GetPostsQueryParams): Promise<PaginatedViewDto<PostViewDto[]>> {...} из blogs.controller.ts, интересует то что мы в контроллер блога импортим туда сущности (дтошки) из поста, это нормально?
+
+ 

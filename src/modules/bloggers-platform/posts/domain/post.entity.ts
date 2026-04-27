@@ -1,8 +1,13 @@
 import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
 import {ApiProperty} from "@nestjs/swagger";
-import {ExtendedPostViewModel, ExtendedPostViewModelSchema} from "./extended-post-view-model.schema";
+import {
+    ExtendedPostModel,
+    ExtendedPostModelSchema,
+} from "./extended-post-model.schema";
 import {CreatePostDomainDto} from "./dto/create-post.domain.dto";
 import {HydratedDocument, Model} from "mongoose";
+import {LikeStatus} from "../../../../core/enums/like-status.enum";
+import {UpdatePostInputDto} from "../dto/create-post-input.dto";
 
 
 // post entity structure for reference:
@@ -69,8 +74,8 @@ export class Post {
     @Prop({type: Date, nullable: true})
     deletedAt: Date | null;
 
-    @Prop({type: ExtendedPostViewModelSchema})
-    extendedLikesInfo: ExtendedPostViewModel;
+    @Prop({type: ExtendedPostModelSchema})
+    extendedLikesInfo: ExtendedPostModel;
 
     get id(): string {
         // @ts-ignore
@@ -78,7 +83,53 @@ export class Post {
     }
 
     static createInstance(dto: CreatePostDomainDto): PostDocument {
+        const {title, shortDescription, content, blogId, blogName} = dto;
 
+        const newPost = new this();
+        newPost.shortDescription = shortDescription;
+        newPost.content = content;
+        newPost.title = title;
+        newPost.blogId = blogId;
+        newPost.blogName = blogName;
+        newPost.createdAt = new Date();
+        newPost.extendedLikesInfo.likesCount =0;
+        newPost.extendedLikesInfo.dislikesCount =0;
+        newPost.extendedLikesInfo.myStatus = LikeStatus.None;
+        newPost.extendedLikesInfo.newestLikes = [];
+        // newPost.extendedLikesInfo = {
+        //     likesCount: 0,
+        //     dislikesCount: 0,
+        //     myStatus: LikeStatus.None,
+        //     newestLikes: []
+        // };
+
+        return newPost as PostDocument;
+    }
+
+    makeDeleted() {
+        if (this.deletedAt !== null) {
+            throw new Error('Post entity already deleted');
+        }
+        this.deletedAt = new Date();
+    }
+
+    // "title": "string",
+    // "shortDescription": "string",
+    // "content": "string",
+    // "blogId": "string"
+    update(dto: UpdatePostInputDto) {
+        if (dto.title !== this.title) {
+            this.title = dto.title;
+        }
+        if (dto.shortDescription !== this.shortDescription) {
+            this.shortDescription = dto.shortDescription;
+        }
+        if (dto.content !== this.content) {
+            this.content = dto.content;
+        }
+        if (dto.blogId !== this.blogId) {
+            this.blogId = dto.blogId;
+        }
     }
 }
 

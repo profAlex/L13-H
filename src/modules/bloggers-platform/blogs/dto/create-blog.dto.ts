@@ -4,7 +4,7 @@ export class CreateBlogDto {
     websiteUrl: string;
 }
 
-export class UpdateBlogDto {
+export class UpdateBlogInputDto {
     name: string;
     description: string;
     websiteUrl: string;

@@ -8,7 +8,7 @@ import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
 
 
 @Schema({_id: false})
-export class LikeDetailsViewModel {
+export class LikeDetailsModel {
     @Prop({type: String})
     addedAt: string;
 
@@ -19,4 +19,4 @@ export class LikeDetailsViewModel {
     login: string;
 }
 
-export const LikeDetailsViewModelSchema = SchemaFactory.createForClass(LikeDetailsViewModel);
+export const LikeDetailsModelSchema = SchemaFactory.createForClass(LikeDetailsModel);
