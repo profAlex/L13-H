@@ -7,9 +7,14 @@ import {Post, PostModelType} from "../../domain/post.entity";
 import {SortDirection} from "../../../../../core/dto/base.query-params.input-dto";
 
 @Injectable()
-export class PostQueryRepository {
+export class PostsQueryRepository {
     constructor(@InjectModel(Post.name) private PostModel: PostModelType) {
     }
+    async ifPostExists(id: string): Promise<boolean> {
+        const count = await this.PostModel.countDocuments({_id: id});
+        return count > 0;
+    }
+
 
     async getPostsByBlogId({userId, blogId, query}: {
         userId?: string | null,
@@ -40,6 +45,7 @@ export class PostQueryRepository {
             this.PostModel.countDocuments(filter),
         ]);
 
+        // ЭТА ЧАСТЬ ПОКА ЧТО НЕ НУЖНА, НУЖНО БУДТЕТ ПРАВИТЬ КОГДА ПОЯВЯТСЯ КОММЕНТЫ И ЛАКИ С АВТОРИЗАЦИЕЙ
         // const postIdsList = postsList.map((post) => post.id);
         // let postsReactionList: (PostsLikesStorageModel & { _id: ObjectId })[] =
         //     [];

@@ -8,7 +8,7 @@ import {BlogsQueryRepository} from "./blogs/infrastructure/query/blogs.query-rep
 import {Post, PostSchema} from "./posts/domain/post.entity";
 import {BlogsCommandRepository} from "./blogs/infrastructure/blogs.command-repository";
 import {PostsService} from "./posts/application/posts.service";
-import {PostQueryRepository} from "./posts/infrastructure/query/posts.query-repository";
+import {PostsQueryRepository} from "./posts/infrastructure/query/posts.query-repository";
 
 //тут регистрируем провайдеры всех сущностей блоггерской платформы (blogs, posts, comments, etc...)
 @Module({
@@ -19,6 +19,6 @@ import {PostQueryRepository} from "./posts/infrastructure/query/posts.query-repo
     UserAccountsModule
   ],
   controllers: [BlogsController],
-  providers: [BlogsService, BlogsQueryRepository, BlogsCommandRepository, PostsService, PostQueryRepository],
+  providers: [BlogsService, BlogsQueryRepository, BlogsCommandRepository, PostsService, PostsQueryRepository],
 })
 export class BloggersPlatformModule {}

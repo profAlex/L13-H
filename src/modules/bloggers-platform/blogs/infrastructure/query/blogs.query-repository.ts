@@ -14,6 +14,7 @@ export class BlogsQueryRepository {
     ) {
     }
 
+
     async getAllBlogs(query: GetBlogsQueryParams): Promise<PaginatedViewDto<BlogViewDto[]>> {
         const filter: FilterQuery<Blog> = {
             deletedAt: null,
@@ -83,5 +84,11 @@ export class BlogsQueryRepository {
         }
 
         return BlogViewDto.mapToView(blog);
+    }
+
+    async ifBlogExistsOrNotFoundFail(blogId: string): Promise<boolean> {
+        const count = await this.BlogModel.countDocuments({_id: blogId});
+
+        return count > 0;
     }
 }

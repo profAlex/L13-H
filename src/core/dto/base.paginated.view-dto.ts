@@ -3,7 +3,7 @@ import {ApiProperty} from "@nestjs/swagger";
 
 export abstract class PaginatedViewDto<T> {
   @ApiProperty({
-    type: () => Object, //ленивый резолвер
+    type: () => Object, // ленивый резолвер
     isArray: true,
   })
   abstract items: T;
@@ -12,7 +12,7 @@ export abstract class PaginatedViewDto<T> {
   page: number;
   pageSize: number;
 
-  //статический метод-утилита для мапинга
+  // статический метод-утилита для мапинга
   public static mapToView<T>(data: {
 
     items: T;
