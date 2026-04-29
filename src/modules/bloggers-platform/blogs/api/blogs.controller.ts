@@ -1,5 +1,5 @@
 import {ApiOkResponse, ApiOperation, ApiParam, ApiResponse, ApiTags} from "@nestjs/swagger";
-import {Body, Controller, Get, Param, Post, Query} from "@nestjs/common";
+import {Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query} from "@nestjs/common";
 import {GetBlogsQueryParams} from "./input-dto/get-blogs-query-params.input-dto";
 import {PaginatedViewDto} from "../../../../core/dto/base.paginated.view-dto";
 import {BlogViewDto} from "./view-dto/blogs.view-dto";
@@ -12,6 +12,8 @@ import {BlogsService} from "../application/blogs.service";
 import {PostsService} from "../../posts/application/posts.service";
 
 import {BlogsQueryRepository} from "../infrastructure/query/blogs.query-repository";
+import {CreateBlogPostInputDto} from "./input-dto/create-blog-post.input-dto";
+import {UpdateBlogInputDto} from "../dto/create-blog.dto";
 
 @ApiTags('Blogs endpoint')
 @Controller('blogs')
@@ -23,7 +25,6 @@ export class BlogsController {
         console.log('BlogsController created');
     }
 
-    @Get()
     @ApiOperation({
         summary: 'Получить все блоги',
         description: 'Возвращает список блогов с поддержкой пагинации, поиска по имени и сортировки'
@@ -32,10 +33,13 @@ export class BlogsController {
         description: 'Успех',
         type: SwaggerBlogsPaginatedViewDto // Используем специальный класс для вывода в сваггер с "плоской" структурой, потмоу что PaginatedViewDto<T> сваггер не подхватит красиво и то что внутри items не отобразит
     })
+    @HttpCode(HttpStatus.OK)
+    @Get()
     async getALlBlogs(@Query() query: GetBlogsQueryParams): Promise<PaginatedViewDto<BlogViewDto[]>> {
         return this.blogsQueryRepository.getAllBlogs(query);
     }
 
+    @HttpCode(HttpStatus.CREATED)
     @Post()
     async createNewBlog(@Body() body: CreateBlogInputDto): Promise<BlogViewDto> {
         const blogId = await this.blogsService.createNewBlog(body);
@@ -50,10 +54,30 @@ export class BlogsController {
     @ApiParam({name: 'blogId'}) //для сваггера
     // TODO: надо сделать плоский класс чтобы swagger подхватил то тчо внутри items[] находится, по аналогии с SwaggerBlogsPaginatedViewDto
     @ApiOkResponse({type: PaginatedViewDto<PostViewDto>})
+    @HttpCode(HttpStatus.OK)
     @Get(':blogId/posts')
     async getPostsByBlogId(@Param('blogId') blogId: string, @Query() query: GetPostsQueryParams): Promise<PaginatedViewDto<PostViewDto[]>> {
+
         return this.postsService.getPostsByBlogId({blogId, query});
     }
 
+    @HttpCode(HttpStatus.CREATED)
+    @Post(':blogId/posts')
+    async createPostByBlogId(@Param('blogId') blogId: string, @Body() body: CreateBlogPostInputDto): Promise<PostViewDto> {
+        return this.postsService.createPostByBlogId({blogId, body});
+    }
+
+    @HttpCode(HttpStatus.OK)
+    @Get(':id')
+    async getBlogById(@Param('id') id: string): Promise<BlogViewDto> {
+        return this.blogsQueryRepository.getBlogByIdOrNotFoundFail(id);
+    }
+
+    async updateBlogById(@Param('id') id: string, @Body() body: UpdateBlogInputDto): Promise<BlogViewDto> {
+        return this.blogsService.updateBlogById({
+            id: id,
+            ...body
+        });
+    }
 
 }

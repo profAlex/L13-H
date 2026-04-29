@@ -10,8 +10,10 @@ import {SortDirection} from "../../../../../core/dto/base.query-params.input-dto
 export class PostsQueryRepository {
     constructor(@InjectModel(Post.name) private PostModel: PostModelType) {
     }
+
     async ifPostExists(id: string): Promise<boolean> {
-        const count = await this.PostModel.countDocuments({_id: id});
+        const count = await this.PostModel.countDocuments({_id: id, deletedAt: null});
+
         return count > 0;
     }
 
@@ -20,15 +22,15 @@ export class PostsQueryRepository {
         userId?: string | null,
         blogId: string,
         query: GetPostsQueryParams
-    }):Promise<PaginatedViewDto<PostViewDto[]>> {
-        const { sortBy, sortDirection, pageNumber, pageSize } =
+    }): Promise<PaginatedViewDto<PostViewDto[]>> {
+        const {sortBy, sortDirection, pageNumber, pageSize} =
             query;
         const sentBlogId = blogId;
         const sentUserId = userId;
 
         const skip = query.calculateSkip();
         // const skip = (pageNumber - 1) * pageSize;
-        const filter = sentBlogId ? { blogId: sentBlogId } : {};
+        const filter = sentBlogId ? {blogId: sentBlogId} : {};
 
         const [postsList, totalCount] = await Promise.all([
             this.PostModel.find(filter)

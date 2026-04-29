@@ -13,7 +13,9 @@ export class BlogsQueryRepository {
         private BlogModel: BlogModelType,
     ) {
     }
-
+    async getBlogName(sentBlogId:string) {
+        return this.BlogModel.findOne({_id:sentBlogId, deletedAt: null}).select('name').lean();
+    }
 
     async getAllBlogs(query: GetBlogsQueryParams): Promise<PaginatedViewDto<BlogViewDto[]>> {
         const filter: FilterQuery<Blog> = {
@@ -86,8 +88,8 @@ export class BlogsQueryRepository {
         return BlogViewDto.mapToView(blog);
     }
 
-    async ifBlogExistsOrNotFoundFail(blogId: string): Promise<boolean> {
-        const count = await this.BlogModel.countDocuments({_id: blogId});
+    async ifBlogExists(blogId: string): Promise<boolean> {
+        const count = await this.BlogModel.countDocuments({_id: blogId, deletedAt: null});
 
         return count > 0;
     }

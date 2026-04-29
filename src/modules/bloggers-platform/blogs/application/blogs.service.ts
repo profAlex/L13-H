@@ -28,4 +28,13 @@ export class BlogsService {
 
         return blog.id;
     }
+
+    async updateBlogById({id, name, description, websiteUrl}: {
+        id: string,
+        name: string,
+        description: string,
+        websiteUrl: string
+    }): Promise<Blog> {
+        
+    }
 }
