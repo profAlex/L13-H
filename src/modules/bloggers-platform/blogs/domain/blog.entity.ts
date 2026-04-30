@@ -45,6 +45,7 @@ export class Blog {
      * @type {Date}
      */
     createdAt: Date;
+    updatedAt: Date;
 
     /**
      * Deletion timestamp, nullable, if date exist, means entity soft deleted

@@ -49,6 +49,8 @@ export class PostViewDto {
     };
 
     //TODO: сделать FlattenMaps и для блога, проверить что там это есть
+    // FlattenMaps дает совместимость с .lean(), т.к. внутри lean-документа уже нет никаких
+    // специальных методов и типов, присущих hydrated-документу mongoose
     static mapToView(post: FlattenMaps<Post> & { _id: Types.ObjectId }): PostViewDto {
         const newPost = new PostViewDto();
 
