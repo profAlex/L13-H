@@ -1,5 +1,5 @@
 import {ApiOkResponse, ApiOperation, ApiParam, ApiResponse, ApiTags} from "@nestjs/swagger";
-import {Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query} from "@nestjs/common";
+import {Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query} from "@nestjs/common";
 import {GetBlogsQueryParams} from "./input-dto/get-blogs-query-params.input-dto";
 import {PaginatedViewDto} from "../../../../core/dto/base.paginated.view-dto";
 import {BlogViewDto} from "./view-dto/blogs.view-dto";
@@ -33,14 +33,14 @@ export class BlogsController {
         description: 'Успех',
         type: SwaggerBlogsPaginatedViewDto // Используем специальный класс для вывода в сваггер с "плоской" структурой, потмоу что PaginatedViewDto<T> сваггер не подхватит красиво и то что внутри items не отобразит
     })
-    @HttpCode(HttpStatus.OK)
     @Get()
+    @HttpCode(HttpStatus.OK)
     async getALlBlogs(@Query() query: GetBlogsQueryParams): Promise<PaginatedViewDto<BlogViewDto[]>> {
         return this.blogsQueryRepository.getAllBlogs(query);
     }
 
-    @HttpCode(HttpStatus.CREATED)
     @Post()
+    @HttpCode(HttpStatus.CREATED)
     async createNewBlog(@Body() body: CreateBlogInputDto): Promise<BlogViewDto> {
         const blogId = await this.blogsService.createNewBlog(body);
 
@@ -54,30 +54,37 @@ export class BlogsController {
     @ApiParam({name: 'blogId'}) //для сваггера
     // TODO: надо сделать плоский класс чтобы swagger подхватил то тчо внутри items[] находится, по аналогии с SwaggerBlogsPaginatedViewDto
     @ApiOkResponse({type: PaginatedViewDto<PostViewDto>})
-    @HttpCode(HttpStatus.OK)
     @Get(':blogId/posts')
+    @HttpCode(HttpStatus.OK)
     async getPostsByBlogId(@Param('blogId') blogId: string, @Query() query: GetPostsQueryParams): Promise<PaginatedViewDto<PostViewDto[]>> {
 
         return this.postsService.getPostsByBlogId({blogId, query});
     }
 
-    @HttpCode(HttpStatus.CREATED)
     @Post(':blogId/posts')
+    @HttpCode(HttpStatus.CREATED)
     async createPostByBlogId(@Param('blogId') blogId: string, @Body() body: CreateBlogPostInputDto): Promise<PostViewDto> {
         return this.postsService.createPostByBlogId({blogId, body});
     }
 
-    @HttpCode(HttpStatus.OK)
     @Get(':id')
+    @HttpCode(HttpStatus.OK)
     async getBlogById(@Param('id') id: string): Promise<BlogViewDto> {
         return this.blogsQueryRepository.getBlogByIdOrNotFoundFail(id);
     }
 
-    async updateBlogById(@Param('id') id: string, @Body() body: UpdateBlogInputDto): Promise<BlogViewDto> {
+    @Put(':id')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async updateBlogById(@Param('id') id: string, @Body() body: UpdateBlogInputDto): Promise<void> {
         return this.blogsService.updateBlogById({
-            id: id,
+            blogId: id,
             ...body
         });
     }
 
+    @Delete(':id')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async deleteBlogById(@Param('id') id: string): Promise<void> {
+        return this.blogsService.deleteBlogById(id);
+    }
 }

@@ -112,7 +112,7 @@ export class Blog {
      * @param {UpdateUserDto} dto - The data transfer object for blog updates
      * DDD continue: инкапсуляция (вызываем методы, которые меняют состояние\св-ва) объектов согласно правилам этого объекта
      */
-    update(dto: UpdateBlogInputDto) {
+    updateBlog(dto: UpdateBlogInputDto) {
         if (dto.name !== this.name) {
             this.name = dto.name;
         }

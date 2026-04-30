@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, NotFoundException} from '@nestjs/common';
 import {
     UsersExternalQueryRepository
 } from '../../../user-accounts/infrastructure/external-query/users.external-query-repository';
@@ -29,12 +29,28 @@ export class BlogsService {
         return blog.id;
     }
 
-    async updateBlogById({id, name, description, websiteUrl}: {
-        id: string,
+    async updateBlogById({blogId, name, description, websiteUrl}: {
+        blogId: string,
         name: string,
         description: string,
         websiteUrl: string
-    }): Promise<Blog> {
-        
+    }): Promise<void> {
+        const blog = await this.blogsCommandRepository.getBlogDocumentById(blogId);
+        if (!blog) {
+            throw new NotFoundException(`Blog with id ${blogId} not found`);
+        }
+
+        blog.updateBlog({name, description, websiteUrl});    // Если нашли, обновляем
+        await this.blogsCommandRepository.save(blog);
+    }
+
+    async deleteBlogById(blogId: string): Promise<void> {
+        const blog = await this.blogsCommandRepository.getBlogDocumentById(blogId);
+        if (!blog) {
+            throw new NotFoundException(`Blog with id ${blogId} not found`);
+        }
+
+        blog.makeDeleted();
+        await this.blogsCommandRepository.save(blog);
     }
 }

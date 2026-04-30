@@ -1,7 +1,7 @@
 import {PaginatedViewDto} from "../../../../../core/dto/base.paginated.view-dto";
 import {BlogViewDto} from "../../api/view-dto/blogs.view-dto";
-import {Blog, BlogModelType} from "../../domain/blog.entity";
-import {FilterQuery} from "mongoose";
+import {Blog, BlogDocument, BlogModelType} from "../../domain/blog.entity";
+import {FilterQuery, ObjectId} from "mongoose";
 import {GetBlogsQueryParams} from "../../api/input-dto/get-blogs-query-params.input-dto";
 import {Injectable, NotFoundException} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
@@ -93,4 +93,6 @@ export class BlogsQueryRepository {
 
         return count > 0;
     }
+
+
 }
