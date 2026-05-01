@@ -1,6 +1,6 @@
 import {Injectable, NotFoundException} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
-import {CommentModelType} from "../domain/comment.entity";
+import {Comment, CommentModelType} from "../domain/comment.entity";
 import {CommentViewDto} from "../api/view-dto/comments.view-dto";
 import {GetCommentsQueryParams} from "../api/input-dto/get-comments-query-params.input-dto";
 import {PaginatedViewDto} from "../../../../core/dto/base.paginated.view-dto";
@@ -22,7 +22,7 @@ export class CommentsService {
         userId?: string | null, // параметр на будущее, когда появится вариант делать анонимные запросы и неанонимные с конкретным юзером
         postId: string,
         query: GetCommentsQueryParams
-    }): Promise<PaginatedViewDto<CommentViewDto[]>> {
+    }): Promise<PaginatedViewDto<CommentViewDto>> {
 
         if (await this.postsQueryRepository.ifPostExists(postId)) {
             throw new NotFoundException("Blog not found");

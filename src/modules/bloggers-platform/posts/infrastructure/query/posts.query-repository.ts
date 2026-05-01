@@ -1,4 +1,4 @@
-import {Injectable} from "@nestjs/common";
+import {Injectable, NotFoundException} from "@nestjs/common";
 import {GetPostsQueryParams} from "../../api/input-dto/get-posts-query-params.input-dto";
 import {PostViewDto} from "../../api/view-dto/posts.view-dto";
 import {PaginatedViewDto} from "../../../../../core/dto/base.paginated.view-dto";
@@ -22,7 +22,7 @@ export class PostsQueryRepository {
         userId?: string | null,
         blogId: string,
         query: GetPostsQueryParams
-    }): Promise<PaginatedViewDto<PostViewDto[]>> {
+    }): Promise<PaginatedViewDto<PostViewDto>> {
         const {sortBy, sortDirection, pageNumber, pageSize} =
             query;
         const sentBlogId = blogId;
@@ -30,7 +30,10 @@ export class PostsQueryRepository {
 
         const skip = query.calculateSkip();
         // const skip = (pageNumber - 1) * pageSize;
-        const filter = sentBlogId ? {blogId: sentBlogId} : {};
+        const filter = {
+            deletedAt: null,
+            ...(sentBlogId ? {blogId: sentBlogId} : {})
+        };
 
         const [postsList, totalCount] = await Promise.all([
             this.PostModel.find(filter)
@@ -65,12 +68,62 @@ export class PostsQueryRepository {
         //     totalCount: totalCount,
         // });
 
-        return PaginatedViewDto.mapToView<PostViewDto[]>({
+        return PaginatedViewDto.mapToView<PostViewDto>({
             items: postsList.map(item => PostViewDto.mapToView(item)),
             page: pageNumber,
             size: pageSize,
             totalCount: totalCount,
         })
+    }
+
+    async getAllPosts({sentUserId, query}: {
+        sentUserId?: string,
+        query: GetPostsQueryParams
+    }): Promise<PaginatedViewDto<PostViewDto>> {
+        const {sortBy, sortDirection, pageNumber, pageSize} =
+            query;
+        const skip = query.calculateSkip();
+        const filter = {
+            deletedAt: null,
+        };
+        const [postsList, totalCount] = await Promise.all([
+            this.PostModel.find(filter).sort({[sortBy]: sortDirection === SortDirection.Asc ? 1 : -1}).skip(skip).limit(pageSize).lean(),
+            this.PostModel.countDocuments(filter),
+        ]);
+
+        // ЭТА ЧАСТЬ ПОКА ЧТО НЕ НУЖНА, НУЖНО БУДТЕТ ПРАВИТЬ КОГДА ПОЯВЯТСЯ КОММЕНТЫ И ЛАКИ С АВТОРИЗАЦИЕЙ
+        // const postIdsList = postsList.map((post) => post.id);
+        // let postsReactionList: (PostsLikesStorageModel & { _id: ObjectId })[] =
+        //     [];
+        // if (sentUserId) {
+        //     const postsReactionList =
+        //         await this.postsLikesQueryRepository.getReactionListForPosts(
+        //             postIdsList,
+        //             sentUserId,
+        //         );
+        // }
+
+        // return mapToPostListPaginatedOutput(postsList, postsReactionList, {
+        //     pageNumber: pageNumber,
+        //     pageSize: pageSize,
+        //     totalCount: totalCount,
+        // });
+
+        return PaginatedViewDto.mapToView<PostViewDto>({
+            items: postsList.map(item => PostViewDto.mapToView(item)),
+            page: pageNumber,
+            size: pageSize,
+            totalCount: totalCount
+        })
+    }
+
+    async getPostByIdOrNotFoundFail(sentPostId: string): Promise<PostViewDto> {
+        const post = await this.PostModel.findOne({deletedAt:null, _id:sentPostId});
+        if (!post) {
+            throw new NotFoundException("Post not found");
+        }
+
+        return PostViewDto.mapToView(post);
     }
 
 }

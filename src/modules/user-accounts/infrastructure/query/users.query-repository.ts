@@ -29,7 +29,7 @@ export class UsersQueryRepository {
 
   async getAll(
     query: GetUsersQueryParams,
-  ): Promise<PaginatedViewDto<UserViewDto[]>> {
+  ): Promise<PaginatedViewDto<UserViewDto>> {
     const filter: FilterQuery<User> = {
       deletedAt: null,
     };

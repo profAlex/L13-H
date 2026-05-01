@@ -11,6 +11,10 @@ import {PostsService} from "./posts/application/posts.service";
 import {PostsQueryRepository} from "./posts/infrastructure/query/posts.query-repository";
 import {PostsCommandRepository} from "./posts/infrastructure/posts.command-repository";
 import {Comment, CommentSchema} from "./comments/domain/comment.entity";
+import {PostsController} from "./posts/api/posts.controller";
+import {CommentsController} from "./comments/api/comments.controller";
+import {CommentsService} from "./comments/application/comments.service";
+import {CommentsQueryRepository} from "./comments/infrastructure/query/comments.query-repository";
 
 //тут регистрируем провайдеры всех сущностей блоггерской платформы (blogs, posts, comments, etc...)
 @Module({
@@ -21,7 +25,7 @@ import {Comment, CommentSchema} from "./comments/domain/comment.entity";
 
     UserAccountsModule
   ],
-  controllers: [BlogsController],
-  providers: [BlogsService, BlogsQueryRepository, BlogsCommandRepository, PostsService, PostsQueryRepository, PostsCommandRepository],
+  controllers: [BlogsController, PostsController, CommentsController],
+  providers: [BlogsService, BlogsQueryRepository, BlogsCommandRepository, PostsService, PostsQueryRepository, PostsCommandRepository, CommentsService, CommentsQueryRepository, /*CommentsCommandRepository*/],
 })
 export class BloggersPlatformModule {}

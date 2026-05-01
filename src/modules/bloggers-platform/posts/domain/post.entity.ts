@@ -92,10 +92,12 @@ export class Post {
         newPost.blogId = blogId;
         newPost.blogName = blogName;
         newPost.createdAt = new Date();
-        newPost.extendedLikesInfo.likesCount =0;
-        newPost.extendedLikesInfo.dislikesCount =0;
-        newPost.extendedLikesInfo.myStatus = LikeStatus.None;
-        newPost.extendedLikesInfo.newestLikes = [];
+        newPost.extendedLikesInfo = {
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: LikeStatus.None,
+            newestLikes: []
+        };
         // newPost.extendedLikesInfo = {
         //     likesCount: 0,
         //     dislikesCount: 0,
@@ -117,7 +119,7 @@ export class Post {
     // "shortDescription": "string",
     // "content": "string",
     // "blogId": "string"
-    update(dto: UpdatePostInputDto) {
+    updatePost(dto: UpdatePostInputDto) {
         if (dto.title !== this.title) {
             this.title = dto.title;
         }

@@ -35,7 +35,7 @@ export class BlogsController {
     })
     @Get()
     @HttpCode(HttpStatus.OK)
-    async getALlBlogs(@Query() query: GetBlogsQueryParams): Promise<PaginatedViewDto<BlogViewDto[]>> {
+    async getALlBlogs(@Query() query: GetBlogsQueryParams): Promise<PaginatedViewDto<BlogViewDto>> {
         return this.blogsQueryRepository.getAllBlogs(query);
     }
 
@@ -56,7 +56,7 @@ export class BlogsController {
     @ApiOkResponse({type: PaginatedViewDto<PostViewDto>})
     @Get(':blogId/posts')
     @HttpCode(HttpStatus.OK)
-    async getPostsByBlogId(@Param('blogId') blogId: string, @Query() query: GetPostsQueryParams): Promise<PaginatedViewDto<PostViewDto[]>> {
+    async getPostsByBlogId(@Param('blogId') blogId: string, @Query() query: GetPostsQueryParams): Promise<PaginatedViewDto<PostViewDto>> {
 
         return this.postsService.getPostsByBlogId({blogId, query});
     }

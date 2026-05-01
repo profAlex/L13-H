@@ -13,11 +13,12 @@ export class BlogsQueryRepository {
         private BlogModel: BlogModelType,
     ) {
     }
-    async getBlogName(sentBlogId:string) {
-        return this.BlogModel.findOne({_id:sentBlogId, deletedAt: null}).select('name').lean();
+
+    async getBlogName(sentBlogId: string) {
+        return this.BlogModel.findOne({_id: sentBlogId, deletedAt: null}).select('name').lean();
     }
 
-    async getAllBlogs(query: GetBlogsQueryParams): Promise<PaginatedViewDto<BlogViewDto[]>> {
+    async getAllBlogs(query: GetBlogsQueryParams): Promise<PaginatedViewDto<BlogViewDto>> {
         const filter: FilterQuery<Blog> = {
             deletedAt: null,
         };
@@ -67,7 +68,7 @@ export class BlogsQueryRepository {
 
         const items = blogs.map(BlogViewDto.mapToView);
 
-        return PaginatedViewDto.mapToView({
+        return PaginatedViewDto.mapToView<BlogViewDto>({
             items: items,
             page: query.pageNumber,
             size: query.pageSize,
@@ -76,6 +77,7 @@ export class BlogsQueryRepository {
     }
 
     async getBlogByIdOrNotFoundFail(blogId: string): Promise<BlogViewDto> {
+        //TODO переделать на возврат lean()?
         const blog = await this.BlogModel.findOne({
             _id: blogId,
             deletedAt: null,
@@ -84,7 +86,7 @@ export class BlogsQueryRepository {
         if (!blog) {
             throw new NotFoundException('Blog not found');
         }
-
+        // TODO тогда тут в mapToView надо добавлфть Flatten по идее
         return BlogViewDto.mapToView(blog);
     }
 

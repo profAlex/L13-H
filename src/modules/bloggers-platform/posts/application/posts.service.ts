@@ -8,6 +8,8 @@ import {Post, PostModelType} from "../domain/post.entity";
 import {CreateBlogPostInputDto} from "../../blogs/api/input-dto/create-blog-post.input-dto";
 import {InjectModel} from "@nestjs/mongoose";
 import {PostsCommandRepository} from "../infrastructure/posts.command-repository";
+import {CreatePostApiInputDto} from "../api/input-dto/create-post.api.input-dto";
+import {UpdatePostInputDto} from "../dto/create-post-input.dto";
 
 @Injectable()
 export class PostsService {
@@ -19,10 +21,10 @@ export class PostsService {
     }
 
     async getPostsByBlogId({userId, blogId, query}: {
-        userId?: string | null, // параметр на будущее, когда появится вариант делать анонимные запросы и неанонимные с конкретным юзером
+        userId?: string, // параметр на будущее, когда появится вариант делать анонимные запросы и неанонимные с конкретным юзером
         blogId: string,
         query: GetPostsQueryParams
-    }): Promise<PaginatedViewDto<PostViewDto[]>> {
+    }): Promise<PaginatedViewDto<PostViewDto>> {
 
         if (await this.blogsQueryRepository.ifBlogExists(blogId)) {
             throw new NotFoundException("Blog not found");
@@ -33,15 +35,10 @@ export class PostsService {
 
 
     async createPostByBlogId({userId, blogId, body}: {
-        userId?: string | null, // параметр на будущее, когда понадобится верифицировать пользователя с т.зр. может ли этот конкретный юзер создавать пост в этом конкретном блоге (владеет ли он блогом?)
+        userId?: string, // параметр на будущее, когда понадобится верифицировать пользователя с т.зр. может ли этот конкретный юзер создавать пост в этом конкретном блоге (владеет ли он блогом?)
         blogId: string,
         body: CreateBlogPostInputDto
     }): Promise<PostViewDto> {
-
-        if (userId && !(await this.postsQueryRepository.ifPostExists(userId))) {
-            throw new NotFoundException("User not found");
-        }
-
         const blog = await this.blogsQueryRepository.getBlogName(blogId);
         if (!blog) {
             throw new NotFoundException("Blog not found");
@@ -57,5 +54,47 @@ export class PostsService {
         await this.postsCommandRepository.save(post);
 
         return PostViewDto.mapToView(post);
+    }
+
+    async createPost(body: CreatePostApiInputDto): Promise<PostViewDto> {
+
+        const blog = await this.blogsQueryRepository.getBlogName(body.blogId);
+        if (!blog) {
+            throw new NotFoundException("Blog not found");
+        }
+
+        const blogName = blog.name;
+        const post = this.PostModel.createInstance({
+            ...body,
+            blogName
+        });
+
+        await this.postsCommandRepository.save(post);
+
+        return PostViewDto.mapToView(post);
+    }
+
+    async updatePostById({postId, updateInputData}: {
+        postId: string,
+        updateInputData: UpdatePostInputDto
+    }): Promise<void> {
+
+        const post = await this.postsCommandRepository.findSinglePostById(postId);
+        if (!post) {
+            throw new NotFoundException("Post not found");
+        }
+
+        post.updatePost(updateInputData);
+        await this.postsCommandRepository.save(post);
+    }
+
+    async deletePostById(postId: string): Promise<void> {
+        const post = await this.postsCommandRepository.findSinglePostById(postId);
+        if (!post) {
+            throw new NotFoundException("Post not found");
+        }
+
+        post.makeDeleted();
+        await this.postsCommandRepository.save(post);
     }
 }

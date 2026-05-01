@@ -1,7 +1,7 @@
-import {CommentViewDto} from "../../api/view-dto/comments.view-dto";
-import {Injectable} from "@nestjs/common";
+import {Comment, CommentModelType} from "../../domain/comment.entity";
 import {InjectModel} from "@nestjs/mongoose";
-import {CommentModelType} from "../../domain/comment.entity";
+import {Injectable} from "@nestjs/common";
+import {CommentViewDto} from "../../api/view-dto/comments.view-dto";
 import {GetCommentsQueryParams} from "../../api/input-dto/get-comments-query-params.input-dto";
 import {PaginatedViewDto} from "../../../../../core/dto/base.paginated.view-dto";
 import {SortDirection} from "../../../../../core/dto/base.query-params.input-dto";
@@ -27,7 +27,7 @@ export class CommentsQueryRepository {
         userId?: string | null,
         postId: string,
         query: GetCommentsQueryParams
-    }): Promise<PaginatedViewDto<CommentViewDto[]>> {
+    }): Promise<PaginatedViewDto<CommentViewDto>> {
         const {sortBy, sortDirection, pageNumber, pageSize} =
             query;
         const sentPostId = postId;
@@ -35,7 +35,7 @@ export class CommentsQueryRepository {
 
         const skip = query.calculateSkip();
         // const skip = (pageNumber - 1) * pageSize;
-        const filter = sentPostId ? {relatedPostId: sentPostId} : {};
+        const filter = {deletedAt: null, ...(sentPostId ? {relatedPostId: sentPostId} : {})};
 
         const [commentsList, totalCount] = await Promise.all([
             this.CommentModel.find(filter)
@@ -70,7 +70,7 @@ export class CommentsQueryRepository {
         //     totalCount: totalCount,
         // });
 
-        return PaginatedViewDto.mapToView<CommentViewDto[]>({
+        return PaginatedViewDto.mapToView<CommentViewDto>({
             items: commentsList.map(item => CommentViewDto.mapToView(item)),
             page: pageNumber,
             size: pageSize,
