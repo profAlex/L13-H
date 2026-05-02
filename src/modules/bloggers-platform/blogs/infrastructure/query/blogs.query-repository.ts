@@ -77,16 +77,17 @@ export class BlogsQueryRepository {
     }
 
     async getBlogByIdOrNotFoundFail(blogId: string): Promise<BlogViewDto> {
-        //TODO переделать на возврат lean()?
         const blog = await this.BlogModel.findOne({
             _id: blogId,
-            deletedAt: null,
-        });
+            $or: [
+                { deletedAt: null },
+                { deletedAt: { $exists: false } }
+            ]
+        }).lean();
 
         if (!blog) {
             throw new NotFoundException('Blog not found');
         }
-        // TODO тогда тут в mapToView надо добавлфть Flatten по идее
         return BlogViewDto.mapToView(blog);
     }
 

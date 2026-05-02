@@ -51,6 +51,7 @@ export class BlogsService {
         }
 
         blog.makeDeleted();
+
         await this.blogsCommandRepository.save(blog);
     }
 }

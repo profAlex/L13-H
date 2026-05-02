@@ -57,13 +57,13 @@ export class BlogsController {
     @Get(':blogId/posts')
     @HttpCode(HttpStatus.OK)
     async getPostsByBlogId(@Param('blogId') blogId: string, @Query() query: GetPostsQueryParams): Promise<PaginatedViewDto<PostViewDto>> {
-
         return this.postsService.getPostsByBlogId({blogId, query});
     }
 
     @Post(':blogId/posts')
     @HttpCode(HttpStatus.CREATED)
     async createPostByBlogId(@Param('blogId') blogId: string, @Body() body: CreateBlogPostInputDto): Promise<PostViewDto> {
+        // await this.blogsQueryRepository.getBlogByIdOrNotFoundFail(blogId);
         return this.postsService.createPostByBlogId({blogId, body});
     }
 

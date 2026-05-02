@@ -51,7 +51,7 @@ export class Blog {
      * Deletion timestamp, nullable, if date exist, means entity soft deleted
      * @type {Date | null}
      */
-    @Prop({type: Date, nullable: true})
+    @Prop({ type: Date, default: null })
     deletedAt: Date | null;
 
     @ApiProperty({example: false, description: 'True if user has not expired membership subscription to blog'})
@@ -99,7 +99,13 @@ export class Blog {
      */
     makeDeleted() {
         if (this.deletedAt !== null) {
-            throw new Error('Blog entity already deleted');
+            return;
+            // throw new Error('Blog entity already deleted');
+            // Когда в Service или Domain слое вылетает обычный new Error,
+            // NestJS не считает это "запланированной" ошибкой (как NotFoundException).
+            // Он расценивает это как критический сбой и автоматически отдает
+            // 500 Internal Server Error.
+            // TODO: попробовать NotFoundException - но архитектурно это крайне неправильно, этот слой не должен кидать такие специфические исключения, «Домен» (бизнес-логика) должен быть максимально независим от того, как к нему обращаются.
         }
         this.deletedAt = new Date();
     }

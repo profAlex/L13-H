@@ -26,7 +26,7 @@ export class PostsService {
         query: GetPostsQueryParams
     }): Promise<PaginatedViewDto<PostViewDto>> {
 
-        if (await this.blogsQueryRepository.ifBlogExists(blogId)) {
+        if (!await this.blogsQueryRepository.ifBlogExists(blogId)) {
             throw new NotFoundException("Blog not found");
         }
 

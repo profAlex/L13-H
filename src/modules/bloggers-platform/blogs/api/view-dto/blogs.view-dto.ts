@@ -16,16 +16,16 @@ export class BlogViewDto {
     createdAt: Date;
     isMembership: boolean;
 
-    static mapToView(blog: BlogDocument): BlogViewDto {
-        const dto = new BlogViewDto();
-
-        dto.id = blog.id;
-        dto.name = blog.name;
-        dto.description = blog.description;
-        dto.websiteUrl = blog.websiteUrl;
-        dto.createdAt = blog.createdAt;
-        dto.isMembership = blog.isMembership;
-
-        return dto;
+    static mapToView(blog: any): BlogViewDto {
+        return {
+            id: blog._id ? blog._id.toString() : blog.id,
+            name: blog.name,
+            description: blog.description,
+            websiteUrl: blog.websiteUrl,
+            createdAt: blog.createdAt instanceof Date
+                ? blog.createdAt.toISOString()
+                : blog.createdAt,
+            isMembership: blog.isMembership
+        };
     }
 }
