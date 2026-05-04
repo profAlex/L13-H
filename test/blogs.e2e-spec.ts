@@ -13,7 +13,7 @@ describe('BlogsController (e2e)', () => {
         }).compile();
 
         app = moduleFixture.createNestApplication();
-        appSetup(app); // Подключаем твои глобальные префиксы, пайпы и т.д.
+        appSetup(app); // не забываем подключить глобальные префиксы, пайпы
         await app.init();
     });
 
@@ -21,7 +21,7 @@ describe('BlogsController (e2e)', () => {
         await app.close();
     });
 
-    // Очищаем базу перед каждым тестом через твой специальный контроллер
+    // Очищаем базу перед каждым тестом через специальный контроллер
     beforeEach(async () => {
         await request(app.getHttpServer()).delete('/api/testing/all-data');
     });
