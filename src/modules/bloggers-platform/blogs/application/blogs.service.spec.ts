@@ -8,14 +8,16 @@ import {NotFoundException} from "@nestjs/common";
 describe('BlogsService', () => {
     let service: BlogsService;
 
-    const mockRepository = {
+    const mockBlogsCommandRepository = {
         getBlogDocumentById: jest.fn(),
         save: jest.fn(),
     };
 
-    // Создаем мок для модели, даже если мы её не используем напрямую в тесте
-    // Это нужно просто чтобы Nest смог "собрать" конструктор сервиса
-    const mockBlogModel = {};
+    // cоздаю мок для модели, даже если она не используется напрямую в тесте
+    // это нужно просто чтобы Nest смог "собрать" конструктор сервиса
+    const mockBlogModel = {
+        createInstance: jest.fn(),
+    };
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -23,7 +25,7 @@ describe('BlogsService', () => {
                 BlogsService,
                 {
                     provide: BlogsCommandRepository,
-                    useValue: mockRepository
+                    useValue: mockBlogsCommandRepository
                 },
                 {
                     // Это "ключ", под которым Nest ищет модель
@@ -41,16 +43,16 @@ describe('BlogsService', () => {
 
     it('deleteBlogById should find blog and call makeDeleted', async () => {
         // 1. Arrange
-        const fakeBlog = { makeDeleted: jest.fn() }; // Фейковый документ блога
-        mockRepository.getBlogDocumentById.mockResolvedValue(fakeBlog); // Говорим репозиторию вернуть фейк
+        const fakeBlog = {makeDeleted: jest.fn()}; // Фейковый документ блога
+        mockBlogsCommandRepository.getBlogDocumentById.mockResolvedValue(fakeBlog); // Говорим репозиторию вернуть фейк
 
         // 2. Act
         await service.deleteBlogById('some-id');
 
         // 3. Assert
-        expect(mockRepository.getBlogDocumentById).toHaveBeenCalledWith('some-id');
+        expect(mockBlogsCommandRepository.getBlogDocumentById).toHaveBeenCalledWith('some-id');
         expect(fakeBlog.makeDeleted).toHaveBeenCalled();
-        expect(mockRepository.save).toHaveBeenCalledWith(fakeBlog);
+        expect(mockBlogsCommandRepository.save).toHaveBeenCalledWith(fakeBlog);
     });
 
     it('updateBlogById should update blog and call updateBlog', async () => {
@@ -62,21 +64,21 @@ describe('BlogsService', () => {
         };
         const blogId = 'some-id';
 
-        const fakeBlog = { updateBlog: jest.fn() };
-        mockRepository.getBlogDocumentById.mockResolvedValue(fakeBlog); // говорим репозиторию зарезолвить фейковый блог
+        const fakeBlog = {updateBlog: jest.fn()};
+        mockBlogsCommandRepository.getBlogDocumentById.mockResolvedValue(fakeBlog); // говорим репозиторию зарезолвить фейковый блог
 
         // act
         await service.updateBlogById({blogId, ...someDto});
 
         // assert
-        expect(mockRepository.getBlogDocumentById).toHaveBeenCalledWith('some-id');
+        expect(mockBlogsCommandRepository.getBlogDocumentById).toHaveBeenCalledWith('some-id');
         expect(fakeBlog.updateBlog).toHaveBeenCalledWith(someDto);
-        expect(mockRepository.save).toHaveBeenCalledWith(fakeBlog);
+        expect(mockBlogsCommandRepository.save).toHaveBeenCalledWith(fakeBlog);
 
     });
 
     it('updateBlogById should throw NotFoundException if blog exists', async () => {
-        mockRepository.getBlogDocumentById.mockResolvedValue(null);
+        mockBlogsCommandRepository.getBlogDocumentById.mockResolvedValue(null);
         const someDto = {
             name: 'some-name',
             description: 'some description',
@@ -86,7 +88,29 @@ describe('BlogsService', () => {
 
 
         await expect(service.updateBlogById({blogId, ...someDto})).rejects.toThrow(NotFoundException);
-        expect(mockRepository.getBlogDocumentById).toHaveBeenCalledWith('some-id');
-        expect(mockRepository.save).not.toHaveBeenCalled();
+
+        expect(mockBlogsCommandRepository.getBlogDocumentById).toHaveBeenCalledWith('some-id');
+        expect(mockBlogsCommandRepository.save).not.toHaveBeenCalled();
     });
+
+
+    it('createNewBlog should create a new blog', async () => {
+        // arrange
+        const someDto = {
+            name: 'some-name',
+            description: 'some description',
+            websiteUrl: 'http://some-url.com'
+        };
+
+        const fakeBlogEntity = {id: 'some-id'};
+        mockBlogModel.createInstance.mockReturnValue(fakeBlogEntity);
+
+        // act
+        const result = await service.createNewBlog(someDto);
+
+        // assert
+        expect(mockBlogModel.createInstance).toHaveBeenCalledWith(someDto);
+        expect(mockBlogsCommandRepository.save).toHaveBeenCalledWith(fakeBlogEntity);
+        expect(result).toEqual('some-id');
+    })
 });

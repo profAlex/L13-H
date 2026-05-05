@@ -39,7 +39,7 @@ export class BlogsQueryRepository {
         // pageSize: number = 10;
         // sortDirection: SortDirection = SortDirection.Desc;
 
-        // далее защита в дополнение к дефолтным, назначаемым в классе GetBlogsQueryParams
+        // дальнейшее - это дополнительнве проверки в дополнение к дефолтным, назначаемым в классе GetBlogsQueryParams
         // 1) Если пользователь не ввел поисковое слово, query.searchNameTerm будет равен null.
         // В таком случае, если нет проверки if: программа попытается добавить в MongoDB условие
         // { name: { $regex: null } }. База либо вернет ошибку, либо (что хуже) попытается

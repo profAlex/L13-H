@@ -10,7 +10,6 @@ import {CommentsQueryRepository} from "../infrastructure/query/comments.query-re
 @Injectable()
 export class CommentsService {
     constructor(
-        @InjectModel(Comment.name) private CommentModel: CommentModelType,
         private postsQueryRepository:PostsQueryRepository,
         private commentsQueryRepository: CommentsQueryRepository
     ) {
@@ -24,10 +23,10 @@ export class CommentsService {
         query: GetCommentsQueryParams
     }): Promise<PaginatedViewDto<CommentViewDto>> {
 
-        if (await this.postsQueryRepository.ifPostExists(postId)) {
-            throw new NotFoundException("Blog not found");
+        if (!await this.postsQueryRepository.ifPostExists(postId)) {
+            throw new NotFoundException("Post not found");
         }
 
-        return this.commentsQueryRepository.getCommentsByPostId({userId, postId, query});
+        return await this.commentsQueryRepository.getCommentsByPostId({userId, postId, query});
     };
 }

@@ -36,6 +36,7 @@ export class BlogsService {
         websiteUrl: string
     }): Promise<void> {
         const blog = await this.blogsCommandRepository.getBlogDocumentById(blogId);
+
         if (!blog) {
             throw new NotFoundException(`Blog with id ${blogId} not found`);
         }
