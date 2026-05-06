@@ -19,7 +19,7 @@ export class UsersRepository {
   }
 
   async findOrNotFoundFail(id: string): Promise<UserDocument> {
-    const user = await this.UserModel.findOne({id_: id, deletedAt: null});
+    const user = await this.UserModel.findOne({_id: id, deletedAt: null});
 
     if (!user) {
       //TODO: replace with domain exception
