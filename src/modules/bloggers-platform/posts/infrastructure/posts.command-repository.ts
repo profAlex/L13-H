@@ -12,6 +12,6 @@ export class PostsCommandRepository {
     }
 
     async findSinglePostById(sentPostId:string) : Promise<PostDocument | null> {
-        return this.PostModel.findById(sentPostId);
+        return this.PostModel.findOne({_id: sentPostId, deletedAt: null});
     }
 }
