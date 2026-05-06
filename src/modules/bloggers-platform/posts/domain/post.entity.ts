@@ -92,6 +92,7 @@ export class Post {
         newPost.blogId = blogId;
         newPost.blogName = blogName;
         newPost.createdAt = new Date();
+        newPost.deletedAt = null;
         newPost.extendedLikesInfo = {
             likesCount: 0,
             dislikesCount: 0,
