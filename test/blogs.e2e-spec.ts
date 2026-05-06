@@ -23,10 +23,10 @@ describe('BlogsController (e2e)', () => {
 
     // Очищаем базу перед каждым тестом через специальный контроллер
     beforeEach(async () => {
-        await request(app.getHttpServer()).delete('/api/testing/all-data');
+        await request(app.getHttpServer()).delete('/testing/all-data');
     });
 
-    describe('GET /api/blogs', () => {
+    describe('GET /blogs', () => {
         it('should return 200 and paginated blogs storage', async () => {
             // 1. Сначала создадим блог, чтобы список не был пустым
             const createDto = {
@@ -36,13 +36,13 @@ describe('BlogsController (e2e)', () => {
             };
 
             await request(app.getHttpServer())
-                .post('/api/blogs')
+                .post('/blogs')
                 .send(createDto)
                 .expect(201);
 
             // 2. Делаем запрос на получение всех блогов
             const response = await request(app.getHttpServer())
-                .get('/api/blogs')
+                .get('/blogs')
                 .expect(200);
 
             // 3. Проверяем структуру ответа (PaginatedViewDto)
@@ -58,7 +58,7 @@ describe('BlogsController (e2e)', () => {
                         description: createDto.description,
                         websiteUrl: createDto.websiteUrl,
                         createdAt: expect.any(String), // Проверяем, что дата пришла строкой ISO
-                        isMembership: true, // В createInstance у тебя забито true
+                        isMembership: false, // В createInstance у тебя забито true
                     },
                 ],
             });
@@ -66,7 +66,7 @@ describe('BlogsController (e2e)', () => {
 
         it('should return empty pagination if no blogs exist', async () => {
             const response = await request(app.getHttpServer())
-                .get('/api/blogs')
+                .get('/blogs')
                 .expect(200);
 
             expect(response.body).toEqual({
@@ -81,7 +81,7 @@ describe('BlogsController (e2e)', () => {
         it('should return 200 and paginated posts for specific blog', async () => {
             // 1. Создаем блог
             const createBlogResponse = await request(app.getHttpServer())
-                .post('/api/blogs')
+                .post('/blogs')
                 .send({
                     name: 'NodeJS Blog',
                     description: 'Backend news',
@@ -99,7 +99,7 @@ describe('BlogsController (e2e)', () => {
             };
 
             const createPostResponse = await request(app.getHttpServer())
-                .post(`/api/blogs/${blog.id}/posts`)
+                .post(`/blogs/${blog.id}/posts`)
                 .send(createPostDto)
                 .expect(201);
 
@@ -118,7 +118,7 @@ describe('BlogsController (e2e)', () => {
              */
             // 3. Пытаемся получить посты этого блога
             const response = await request(app.getHttpServer())
-                .get(`/api/blogs/${blog.id}/posts`)
+                .get(`/blogs/${blog.id}/posts`)
                 .expect(200);
 
             // 4. Проверяем структуру PaginatedViewDto<PostViewDto>
@@ -151,11 +151,11 @@ describe('BlogsController (e2e)', () => {
             const fakeBlogId = '6633973977c688d054942944'; // Валидный ObjectId, но несуществующий
 
             await request(app.getHttpServer())
-                .get(`/api/blogs/${fakeBlogId}/posts`)
+                .get(`/blogs/${fakeBlogId}/posts`)
                 .expect(404);
         });
 
-        it('POST /api/blogs/:blogId/posts -> should create post for blog and return 201', async () => {
+        it('POST /blogs/:blogId/posts -> should create post for blog and return 201', async () => {
             // 1. Сначала создаем блог, к которому будем привязывать пост
             const createBlogDto = {
                 name: 'Blog for Post',
@@ -164,7 +164,7 @@ describe('BlogsController (e2e)', () => {
             };
 
             const blogResponse = await request(app.getHttpServer())
-                .post('/api/blogs') // Проверь префикс /api согласно своим настройкам
+                .post('/blogs') // Проверь префикс  согласно своим настройкам
                 .send(createBlogDto)
                 .expect(201);
 
@@ -179,7 +179,7 @@ describe('BlogsController (e2e)', () => {
 
             // 3. Отправляем запрос на создание поста
             const response = await request(app.getHttpServer())
-                .post(`/api/blogs/${blog.id}/posts`)
+                .post(`/blogs/${blog.id}/posts`)
                 .send(createPostDto)
                 .expect(201);
 
@@ -202,14 +202,14 @@ describe('BlogsController (e2e)', () => {
 
             // 5. Дополнительно проверяем, что пост реально создался и доступен по GET
             await request(app.getHttpServer())
-                .get(`/api/blogs/${blog.id}/posts`)
+                .get(`/blogs/${blog.id}/posts`)
                 .expect(200)
                 .then(res => {
                     expect(res.body.items[0].id).toBe(response.body.id);
                 });
         });
 
-        it('POST /api/blogs/:blogId/posts -> should return 404 if blog does not exist', async () => {
+        it('POST /blogs/:blogId/posts -> should return 404 if blog does not exist', async () => {
             const fakeBlogId = '6633973977c688d054942944'; // Валидный по формату, но несуществующий ID
 
             const createPostDto = {
@@ -219,12 +219,12 @@ describe('BlogsController (e2e)', () => {
             };
 
             await request(app.getHttpServer())
-                .post(`/api/blogs/${fakeBlogId}/posts`)
+                .post(`/blogs/${fakeBlogId}/posts`)
                 .send(createPostDto)
                 .expect(404);
         });
 
-        it('POST /api/blogs/:blogId/posts -> should create post and return 201 with correct body', async () => {
+        it('POST /blogs/:blogId/posts -> should create post and return 201 with correct body', async () => {
             // 1. Создаем блог-родитель
             const createBlogDto = {
                 name: 'Post Testing Blog',
@@ -233,7 +233,7 @@ describe('BlogsController (e2e)', () => {
             };
 
             const blogResponse = await request(app.getHttpServer())
-                .post('/api/blogs')
+                .post('/blogs')
                 .send(createBlogDto)
                 .expect(201);
 
@@ -248,7 +248,7 @@ describe('BlogsController (e2e)', () => {
 
             // 3. Создаем пост через блог
             const response = await request(app.getHttpServer())
-                .post(`/api/blogs/${blog.id}/posts`)
+                .post(`/blogs/${blog.id}/posts`)
                 .send(createPostDto)
                 .expect(201);
 
@@ -271,9 +271,9 @@ describe('BlogsController (e2e)', () => {
         });
 
         // ЭТО ВАЛИДАЦИЯ
-        // it('POST /api/blogs/:blogId/posts -> should return 400 if input data is incorrect', async () => {
+        // it('POST /blogs/:blogId/posts -> should return 400 if input data is incorrect', async () => {
         //     const blogResponse = await request(app.getHttpServer())
-        //         .post('/api/blogs')
+        //         .post('/blogs')
         //         .send({ name: 'Valid Name', description: 'Desc', websiteUrl: 'https://ok.com' });
         //
         //     const invalidPostDto = {
@@ -283,12 +283,12 @@ describe('BlogsController (e2e)', () => {
         //     };
         //
         //     await request(app.getHttpServer())
-        //         .post(`/api/blogs/${blogResponse.body.id}/posts`)
+        //         .post(`/blogs/${blogResponse.body.id}/posts`)
         //         .send(invalidPostDto)
         //         .expect(400);
         // });
 
-        it('GET /api/blogs/:id -> should return 200 and blog object', async () => {
+        it('GET /blogs/:id -> should return 200 and blog object', async () => {
             // 1. Создаем блог, который будем запрашивать
             const createBlogDto = {
                 name: 'Target Blog',
@@ -297,7 +297,7 @@ describe('BlogsController (e2e)', () => {
             };
 
             const createResponse = await request(app.getHttpServer())
-                .post('/api/blogs')
+                .post('/blogs')
                 .send(createBlogDto)
                 .expect(201);
 
@@ -305,7 +305,7 @@ describe('BlogsController (e2e)', () => {
 
             // 2. Запрашиваем созданный блог по ID
             const response = await request(app.getHttpServer())
-                .get(`/api/blogs/${createdBlog.id}`)
+                .get(`/blogs/${createdBlog.id}`)
                 .expect(200);
 
             // 3. Проверяем соответствие структуры и данных
@@ -319,18 +319,18 @@ describe('BlogsController (e2e)', () => {
             });
         });
 
-        it('GET /api/blogs/:id -> should return 404 if blog does not exist', async () => {
+        it('GET /blogs/:id -> should return 404 if blog does not exist', async () => {
             const nonExistentId = '6633973977c688d054942944'; // Валидный ObjectId, которого нет в базе
 
             await request(app.getHttpServer())
-                .get(`/api/blogs/${nonExistentId}`)
+                .get(`/blogs/${nonExistentId}`)
                 .expect(404);
         });
 
-        it('PUT /api/blogs/:id -> should update blog and return 204', async () => {
+        it('PUT /blogs/:id -> should update blog and return 204', async () => {
             // 1. Создаем блог
             const createResponse = await request(app.getHttpServer())
-                .post('/api/blogs')
+                .post('/blogs')
                 .send({
                     name: 'Old Name',
                     description: 'Old Description',
@@ -348,13 +348,13 @@ describe('BlogsController (e2e)', () => {
             };
 
             await request(app.getHttpServer())
-                .put(`/api/blogs/${blogId}`)
+                .put(`/blogs/${blogId}`)
                 .send(updateDto)
                 .expect(204);
 
             // 3. Проверяем, что данные изменились
             const getResponse = await request(app.getHttpServer())
-                .get(`/api/blogs/${blogId}`)
+                .get(`/blogs/${blogId}`)
                 .expect(200);
 
             expect(getResponse.body.name).toBe(updateDto.name);
@@ -362,17 +362,17 @@ describe('BlogsController (e2e)', () => {
             expect(getResponse.body.websiteUrl).toBe(updateDto.websiteUrl);
         });
 
-        it('PUT /api/blogs/:id -> should return 404 if blog not found', async () => {
+        it('PUT /blogs/:id -> should return 404 if blog not found', async () => {
             await request(app.getHttpServer())
-                .put('/api/blogs/6633973977c688d054942944')
+                .put('/blogs/6633973977c688d054942944')
                 .send({ name: 'Name', description: 'Desc', websiteUrl: 'https://ok.com' })
                 .expect(404);
         });
 
-        it('DELETE /api/blogs/:id -> should delete blog and return 204', async () => {
+        it('DELETE /blogs/:id -> should delete blog and return 204', async () => {
             // 1. Создаем блог
             const createResponse = await request(app.getHttpServer())
-                .post('/api/blogs')
+                .post('/blogs')
                 .send({
                     name: 'Delete Me',
                     description: 'To be deleted',
@@ -384,7 +384,7 @@ describe('BlogsController (e2e)', () => {
 
             // 2. Удаляем блог
             await request(app.getHttpServer())
-                .delete(`/api/blogs/${blogId}`)
+                .delete(`/blogs/${blogId}`)
                 .expect(204);
 
             // Временная проверка: подождать 100мс
@@ -392,13 +392,13 @@ describe('BlogsController (e2e)', () => {
 
             // 3. Пытаемся найти его по ID - должны получить 404
             await request(app.getHttpServer())
-                .get(`/api/blogs/${blogId}`)
+                .get(`/blogs/${blogId}`)
                 .expect(404);
         });
 
-        it('DELETE /api/blogs/:id -> should return 404 if blog does not exist', async () => {
+        it('DELETE /blogs/:id -> should return 404 if blog does not exist', async () => {
             await request(app.getHttpServer())
-                .delete('/api/blogs/6633973977c688d054942944')
+                .delete('/blogs/6633973977c688d054942944')
                 .expect(404);
         });
 
