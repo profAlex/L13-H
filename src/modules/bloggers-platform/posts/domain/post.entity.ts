@@ -110,7 +110,7 @@ export class Post {
 
     makeDeleted() {
         if (this.deletedAt !== null) {
-            throw new Error('Post entity already deleted');
+            return;
         }
         this.deletedAt = new Date();
     }

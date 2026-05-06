@@ -103,7 +103,7 @@ export class User {
      */
     makeDeleted() {
         if (this.deletedAt !== null) {
-            throw new Error('User entity already deleted');
+            return;
         }
         this.deletedAt = new Date();
     }
