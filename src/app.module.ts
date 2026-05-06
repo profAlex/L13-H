@@ -11,7 +11,8 @@ import {envConfig} from "./config";
 @Module({
     //все модули должны быть заимпортированы в корневой модуль, либо напрямую, либо по цепочке (через другие модули)
     imports: [
-        MongooseModule.forRoot(envConfig.mongoURI),
+        // MongooseModule.forRoot(envConfig.mongoURI),
+        MongooseModule.forRoot("mongodb+srv://bolly198:qWvHpN17UfbbBDGI@newlearningcluster.1tnov1c.mongodb.net/?appName=NewLearningCluster"),
         UserAccountsModule,
         TestingModule,
         BloggersPlatformModule,
