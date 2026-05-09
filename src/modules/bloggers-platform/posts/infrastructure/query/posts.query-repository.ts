@@ -118,7 +118,7 @@ export class PostsQueryRepository {
     }
 
     async getPostByIdOrNotFoundFail(sentPostId: string): Promise<PostViewDto> {
-        const post = await this.PostModel.findOne({deletedAt:null, _id:sentPostId});
+        const post = await this.PostModel.findOne({deletedAt: null, _id: sentPostId});
         if (!post) {
             throw new NotFoundException("Post not found");
         }

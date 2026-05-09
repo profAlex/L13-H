@@ -5,12 +5,12 @@ import {FilterQuery, ObjectId} from "mongoose";
 import {GetBlogsQueryParams} from "../../api/input-dto/get-blogs-query-params.input-dto";
 import {Injectable, NotFoundException} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
+import {SortDirection} from "../../../../../core/dto/base.query-params.input-dto";
 
 @Injectable()
 export class BlogsQueryRepository {
     constructor(
-        @InjectModel(Blog.name)
-        private BlogModel: BlogModelType,
+        @InjectModel(Blog.name) private BlogModel: BlogModelType,
     ) {
     }
 
@@ -39,7 +39,7 @@ export class BlogsQueryRepository {
         // pageSize: number = 10;
         // sortDirection: SortDirection = SortDirection.Desc;
 
-        // дальнейшее - это дополнительнве проверки в дополнение к дефолтным, назначаемым в классе GetBlogsQueryParams
+        // дальнейший блог if - это дополнительнве проверки в дополнение к дефолтным, назначаемым в классе GetBlogsQueryParams
         // 1) Если пользователь не ввел поисковое слово, query.searchNameTerm будет равен null.
         // В таком случае, если нет проверки if: программа попытается добавить в MongoDB условие
         // { name: { $regex: null } }. База либо вернет ошибку, либо (что хуже) попытается
@@ -60,7 +60,7 @@ export class BlogsQueryRepository {
         }
 
         const blogs = await this.BlogModel.find(filter)
-            .sort({[query.sortBy]: query.sortDirection})
+            .sort({[query.sortBy]: query.sortDirection === SortDirection.Asc ? 1 : -1})
             .skip(query.calculateSkip())
             .limit(query.pageSize);
 
@@ -80,8 +80,8 @@ export class BlogsQueryRepository {
         const blog = await this.BlogModel.findOne({
             _id: blogId,
             $or: [
-                { deletedAt: null },
-                { deletedAt: { $exists: false } }
+                {deletedAt: null},
+                {deletedAt: {$exists: false}}
             ]
         }).lean();
 

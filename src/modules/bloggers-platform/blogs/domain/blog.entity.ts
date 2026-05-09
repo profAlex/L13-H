@@ -86,6 +86,7 @@ export class Blog {
         newBlog.description = dto.description;
         newBlog.websiteUrl = dto.websiteUrl;
         newBlog.isMembership = false;
+        newBlog.deletedAt = null;
 
         return newBlog as BlogDocument;
     }
@@ -97,6 +98,7 @@ export class Blog {
      * @throws {Error} If the entity is already deleted
      * DDD continue: инкапсуляция (вызываем методы, которые меняют состояние\св-ва) объектов согласно правилам этого объекта
      */
+    //TODO: надо сделать каскадное makeDelete для постов (как и для комментариев в будущем)
     makeDeleted() {
         if (this.deletedAt !== null) {
             return;

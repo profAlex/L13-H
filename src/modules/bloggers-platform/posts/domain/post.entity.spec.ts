@@ -1,5 +1,3 @@
-import {Blog} from "../../blogs/domain/blog.entity";
-import {CreateBlogDomainDto} from "../../blogs/domain/dto/create-blog.domain.dto";
 import {Post} from "./post.entity";
 import {CreatePostDomainDto} from "./dto/create-post.domain.dto";
 import {LikeStatus} from "../../../../core/enums/like-status.enum";
@@ -7,7 +5,7 @@ import {UpdatePostInputDto} from "../dto/create-post-input.dto";
 
 describe('Post entity', () => {
 
-    it('should create Post entity with correct fields/properties when called', () => {
+    it('makeDeleted should create Post entity with correct fields/properties when called', () => {
         const testDto:CreatePostDomainDto = {
             title: 'some-title',
             shortDescription: 'some-short-description',
@@ -15,19 +13,9 @@ describe('Post entity', () => {
             blogId: 'some-blogId',
             blogName: 'some-blogName',
         }
+
         const testPost = Post.createInstance(testDto);
-        /*
-        newPost.blogId = blogId;
-        newPost.blogName = blogName;
-        newPost.createdAt = new Date();
-        newPost.deletedAt = null;
-        newPost.extendedLikesInfo = {
-            likesCount: 0,
-            dislikesCount: 0,
-            myStatus: LikeStatus.None,
-            newestLikes: []
-        };
-         */
+
         expect(testPost.shortDescription).toEqual('some-short-description');
         expect(testPost.content).toEqual('some-content');
         expect(testPost.title).toEqual('some-title');
@@ -46,7 +34,7 @@ describe('Post entity', () => {
     });
 
 
-    it('should set deletedAt with a proper Data value when called', () => {
+    it('makeDeleted should set deletedAt with a proper Data value when called', () => {
         const testDto: CreatePostDomainDto = {
             title: 'some-title',
             shortDescription: 'some-short-description',
@@ -61,7 +49,8 @@ describe('Post entity', () => {
         expect(testPost.deletedAt).toBeInstanceOf(Date);
     });
 
-    it('should update name and description', () => {
+
+    it('updatePost should update title, shortDescription and content', () => {
         const testDto:CreatePostDomainDto = {
             title: 'some-title',
             shortDescription: 'some-short-description',

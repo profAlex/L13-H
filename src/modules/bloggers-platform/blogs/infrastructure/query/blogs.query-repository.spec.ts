@@ -95,8 +95,8 @@ describe('BlogsQueryRepository', () => {
             }));
 
             // Проверяем вызовы цепочки
-            expect(mockQuery.sort).toHaveBeenCalledWith({ [query.sortBy]: SortDirection.Asc });
-            expect(mockQuery.limit).toHaveBeenCalledWith(5);
+            expect(mockQuery.sort).toHaveBeenCalledWith({ [query.sortBy]: 1 });
+            expect(mockQuery.limit).toHaveBeenCalledWith(query.pageSize);
 
             // Проверяем итоговую структуру
             expect(result.items).toHaveLength(1);
