@@ -68,23 +68,23 @@ describe('BlogsCommandRepository', () => {
         });
     });
 
-    describe('delete', () => {
-        it('should return true if document was deleted', async () => {
-            // Mongoose deleteOne возвращает объект { deletedCount: 1 }
-            mockBlogModel.deleteOne.mockResolvedValue({ deletedCount: 1 });
-
-            const result = await repository.delete('id-to-delete');
-
-            expect(mockBlogModel.deleteOne).toHaveBeenCalledWith({ _id: 'id-to-delete' });
-            expect(result).toBe(true);
-        });
-
-        it('should return false if document was not found to delete', async () => {
-            mockBlogModel.deleteOne.mockResolvedValue({ deletedCount: 0 });
-
-            const result = await repository.delete('missing-id');
-
-            expect(result).toBe(false);
-        });
-    });
+    // describe('delete', () => {
+    //     it('should return true if document was deleted', async () => {
+    //         // Mongoose deleteOne возвращает объект { deletedCount: 1 }
+    //         mockBlogModel.deleteOne.mockResolvedValue({ deletedCount: 1 });
+    //
+    //         const result = await repository.delete('id-to-delete');
+    //
+    //         expect(mockBlogModel.deleteOne).toHaveBeenCalledWith({ _id: 'id-to-delete' });
+    //         expect(result).toBe(true);
+    //     });
+    //
+    //     it('should return false if document was not found to delete', async () => {
+    //         mockBlogModel.deleteOne.mockResolvedValue({ deletedCount: 0 });
+    //
+    //         const result = await repository.delete('missing-id');
+    //
+    //         expect(result).toBe(false);
+    //     });
+    // });
 });

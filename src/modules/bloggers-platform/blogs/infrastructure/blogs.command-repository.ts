@@ -11,10 +11,10 @@ export class BlogsCommandRepository {
         await blog.save();
     }
 
-    async delete(blogId: string): Promise<boolean> {
-        const result = await this.BlogModel.deleteOne({ _id: blogId });
-        return result.deletedCount === 1;
-    }
+    // async delete(blogId: string): Promise<boolean> {
+    //     const result = await this.BlogModel.deleteOne({ _id: blogId });
+    //     return result.deletedCount === 1;
+    // }
 
     async getBlogDocumentById(blogId: string): Promise<BlogDocument | null> {
         return this.BlogModel.findOne({_id: blogId, deletedAt: null});
