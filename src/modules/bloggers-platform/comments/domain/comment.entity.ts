@@ -2,6 +2,8 @@ import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
 import {CommentatorInfo, CommentatorInfoSchema} from "./commentator-info.schema";
 import {LikesInfo, LikesInfoSchema} from "./likes-info.schema";
 import {HydratedDocument, Model} from "mongoose";
+import {CreateCommentDomainInputDto} from "./dto/create-comment.domain.input-dto";
+import {LikeStatus} from "../../../../core/enums/like-status.enum";
 
 // export type CommentStorageModel = {
 //     _id: ObjectId;
@@ -32,11 +34,11 @@ import {HydratedDocument, Model} from "mongoose";
 
 
 @Schema({timestamps: true})
-export class Comment{
-    @Prop({type: Date, required: true})
+export class Comment {
+    @Prop({type: String, required: true})
     relatedPostId: string;
 
-    @Prop({type: Date, required: true})
+    @Prop({type: String, required: true})
     content: string;
 
     @Prop({type: CommentatorInfoSchema, required: true})
@@ -58,12 +60,24 @@ export class Comment{
 
     //TODO: тут надо будет доделывать метод в будущих спринтах
 
-    // static createInstance(dto: CreateCommentDomainDto): CommentDocument{
-    //
-    //     const newComment = new this();
-    //
-    //     return newComment as CommentDocument
-    // }
+    static createInstance(dto: CreateCommentDomainInputDto): CommentDocument {
+        const newComment = new this();
+        newComment.relatedPostId = dto.relatedPostId;
+        newComment.content = dto.content;
+        newComment.commentatorInfo = {
+            userId: dto.commentatorInfo.userId,
+            userLogin: dto.commentatorInfo.userLogin,
+        };
+        newComment.createdAt = new Date();
+        newComment.deletedAt = null;
+        newComment.likesInfo = {
+            likesCount: dto.likesInfo.likesCount,
+            dislikesCount: dto.likesInfo.dislikesCount,
+            myStatus: dto.likesInfo.myStatus,
+        }
+
+        return newComment as CommentDocument;
+    }
 
     // makeDeleted() {
     //     if(this.deletedAt !== null) {

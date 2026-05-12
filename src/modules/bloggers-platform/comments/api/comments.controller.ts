@@ -1,12 +1,19 @@
-import {Controller, Get, NotFoundException, Param} from "@nestjs/common";
+import {Body, Controller, Get, NotFoundException, Param, Post} from "@nestjs/common";
 import {ApiTags} from "@nestjs/swagger";
 import {CommentViewDto} from "./view-dto/comments.view-dto";
 import {CommentsQueryRepository} from "../infrastructure/query/comments.query-repository";
+import {CreatePostApiInputDto} from "../../posts/api/input-dto/create-post.api.input-dto";
+import {PostViewDto} from "../../posts/api/view-dto/posts.view-dto";
+import {CreateCommentApiInputDto} from "./input-dto/create-comment.api.input-dto";
+import {CommentsCommandRepository} from "../infrastructure/comments.command-repository";
+import {CommentsService} from "../application/comments.service";
 
 @ApiTags('Comments endpoint')
 @Controller('comments')
 export class CommentsController {
-    constructor(private commentsQueryRepository: CommentsQueryRepository,) {
+    constructor(private commentsQueryRepository: CommentsQueryRepository,
+
+                private commentsService: CommentsService,) {
         console.log("CommentsController created");
     }
 
@@ -19,5 +26,11 @@ export class CommentsController {
         }
 
         return comment;
+    }
+
+    @Post()
+    async createComment(@Body() body: CreateCommentApiInputDto): Promise<CommentViewDto> {
+        return this.commentsService.createComment(body);
+
     }
 }

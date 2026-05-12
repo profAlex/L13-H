@@ -6,12 +6,14 @@ import {GetCommentsQueryParams} from "../api/input-dto/get-comments-query-params
 import {PaginatedViewDto} from "../../../../core/dto/base.paginated.view-dto";
 import {PostsQueryRepository} from "../../posts/infrastructure/query/posts.query-repository";
 import {CommentsQueryRepository} from "../infrastructure/query/comments.query-repository";
+import {CommentsCommandRepository} from "../infrastructure/comments.command-repository";
 
 @Injectable()
 export class CommentsService {
     constructor(
         private postsQueryRepository:PostsQueryRepository,
-        private commentsQueryRepository: CommentsQueryRepository
+        private commentsQueryRepository: CommentsQueryRepository,
+        private commentsCommandRepository: CommentsCommandRepository,
     ) {
         console.log('CommentsService created');
     }
@@ -28,5 +30,9 @@ export class CommentsService {
         }
 
         return await this.commentsQueryRepository.getCommentsByPostId({userId, postId, query});
+    };
+
+    async createComment(){
+        return this.commentsCommandRepository.createComment(body);
     };
 }
