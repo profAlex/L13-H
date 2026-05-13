@@ -7,7 +7,7 @@ import {appSetup} from "../src/setup/app.setup";
 describe('AppController (e2e)', () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -15,6 +15,15 @@ describe('AppController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     appSetup(app);
     await app.init();
+  });
+
+  // В beforeEach оставляем только легкую операцию очистки базы
+  beforeEach(async () => {
+    await request(app.getHttpServer()).delete('/testing/all-data');
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 
   it('/ (GET)', () => {

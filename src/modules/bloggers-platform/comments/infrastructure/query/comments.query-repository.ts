@@ -1,6 +1,6 @@
 import {Comment, CommentModelType} from "../../domain/comment.entity";
 import {InjectModel} from "@nestjs/mongoose";
-import {Injectable} from "@nestjs/common";
+import {Injectable, NotFoundException} from "@nestjs/common";
 import {CommentViewDto} from "../../api/view-dto/comments.view-dto";
 import {GetCommentsQueryParams} from "../../api/input-dto/get-comments-query-params.input-dto";
 import {PaginatedViewDto} from "../../../../../core/dto/base.paginated.view-dto";

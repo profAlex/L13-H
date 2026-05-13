@@ -71,9 +71,9 @@ export class Comment {
         newComment.createdAt = new Date();
         newComment.deletedAt = null;
         newComment.likesInfo = {
-            likesCount: dto.likesInfo.likesCount,
-            dislikesCount: dto.likesInfo.dislikesCount,
-            myStatus: dto.likesInfo.myStatus,
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: LikeStatus.None,
         }
 
         return newComment as CommentDocument;

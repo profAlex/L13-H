@@ -11,7 +11,4 @@ export class CreateCommentDomainInputDto{
 
     @ApiProperty()
     commentatorInfo: CommentatorInfo;
-
-    @ApiProperty()
-    likesInfo: LikesInfo;
 }

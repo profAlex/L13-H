@@ -18,6 +18,7 @@ describe('BlogsController (e2e)', () => {
     });
 
     afterAll(async () => {
+        await request(app.getHttpServer()).delete('/testing/all-data');
         await app.close();
     });
 

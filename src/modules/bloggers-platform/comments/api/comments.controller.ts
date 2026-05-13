@@ -12,7 +12,7 @@ import {CommentsService} from "../application/comments.service";
 @Controller('comments')
 export class CommentsController {
     constructor(private commentsQueryRepository: CommentsQueryRepository,
-
+                private commentsCommandRepository: CommentsCommandRepository,
                 private commentsService: CommentsService,) {
         console.log("CommentsController created");
     }
@@ -29,8 +29,15 @@ export class CommentsController {
     }
 
     @Post()
-    async createComment(@Body() body: CreateCommentApiInputDto): Promise<CommentViewDto> {
-        return this.commentsService.createComment(body);
+    async createNewComment(@Body() body: CreateCommentApiInputDto): Promise<CommentViewDto> {
+        const commentId = await this.commentsService.createNewComment(body);
 
+        const comment = await this.commentsQueryRepository.getCommentById(commentId);
+
+        if (!comment) {
+            throw new NotFoundException("Comment not found!");
+        }
+
+        return comment;
     }
 }
